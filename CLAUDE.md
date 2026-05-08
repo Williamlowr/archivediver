@@ -1,0 +1,6 @@
+# ArchiveDiver
+
+Follow the repository rules in `AGENTS.md`.
+
+If there is any conflict, `AGENTS.md` is the source of truth.
+
