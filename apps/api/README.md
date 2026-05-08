@@ -1,23 +1,23 @@
 # API Service
 
-FastAPI service that coordinates exhibit generation and MCP tool calls.
+FastAPI backend for ArchiveDiver.
 
-## Purpose
+## Owns
 
-- Accept `POST /api/exhibit` requests.
-- Use LangChain tool-calling with MCP-backed Smithsonian data.
-- Return exhibit JSON and dev trace details.
+- `POST /api/exhibit`
+- MCP tool calls
+- exhibit title, intro, caption, and limitation generation
 
-## Local Run
+## Run
 
-- `python -m pip install -e .`
-- `uvicorn archivediver_api.main:app --reload --port 8000`
+- `.venv/bin/pip install -e "apps/api[dev]"`
+- `ANTHROPIC_API_KEY=... MCP_URL=http://127.0.0.1:9000/sse .venv/bin/python -m uvicorn archivediver_api.main:app --reload --host 127.0.0.1 --port 8000`
 
-## Environment
+## Env
 
 - `ANTHROPIC_API_KEY`
-- `MCP_SERVER_URL` (if using HTTP transport)
+- `MCP_URL`, default `http://localhost:9000/sse`
 
 ## Test
 
-- `pytest`
+- `.venv/bin/python -m pytest apps/api`

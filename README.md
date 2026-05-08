@@ -1,56 +1,46 @@
 # ArchiveDiver
 
-ArchiveDiver is a prototype that generates a small digital exhibit from a user topic using Smithsonian Open Access data through an MCP boundary.
+ArchiveDiver is a small prototype that turns a topic into a short digital exhibit using Smithsonian Open Access data.
 
-## Repo Layout
+## What lives here
 
-- `apps/web`: React + Vite + TypeScript frontend
-- `apps/api`: FastAPI backend with LangChain orchestration
-- `apps/mcp-smithsonian`: MCP server that wraps Smithsonian Open Access
-- `docs`: briefs, handoff notes, deployment notes, prompt log
+- `apps/web`: React + Vite frontend
+- `apps/api`: FastAPI backend that generates exhibit content
+- `apps/mcp-smithsonian`: MCP service that searches and normalizes Smithsonian data
+- `docs`: brief, contracts, deployment notes, handoff notes, prompt log
 
-## Architecture Boundaries
+## Hard boundaries
 
-- Frontend calls backend over HTTP only.
-- Backend treats MCP as the source of artifact data.
-- Smithsonian API key is server-side only and scoped to `apps/mcp-smithsonian`.
-- No auth, no persistence, no payments for MVP.
+- Frontend talks to backend over HTTP only.
+- Frontend does not call Smithsonian directly.
+- Smithsonian API key stays server-side in `apps/mcp-smithsonian`.
+- No auth, no persistence, no payments.
 
-## Prerequisites
+## Local setup
 
-- Node.js 20+
-- npm 10+
-- Python 3.11+
-- Smithsonian Open Access API key
-- Anthropic API key
+1. Copy the env template: `cp .env.example .env`
+2. Fill in `ANTHROPIC_API_KEY` and `SMITHSONIAN_API_KEY`
+3. Create a venv: `python3 -m venv .venv`
+4. Activate it: `source .venv/bin/activate`
+5. Install Python deps: `python -m pip install -e "apps/mcp-smithsonian[dev]" -e "apps/api[dev]"`
+6. Install web deps: `npm install --prefix apps/web`
+7. Start the app: `make dev`
 
-## Quickstart
+Open `http://127.0.0.1:5173`.
 
-1. Copy env template:
-   - `cp .env.example .env`
-2. Fill in required keys in `.env`.
-3. Install dependencies:
-   - `npm install` (root scripts only)
-   - `npm install --prefix apps/web`
-   - `python -m pip install -e apps/api`
-   - `python -m pip install -e apps/mcp-smithsonian`
-4. Start all services:
-   - `make dev` or `npm run dev`
+## Common commands
 
-## Commands
+- Run these from the activated venv.
+- `make dev`: run web, API, and MCP together
+- `make test`: run web, API, and MCP tests
+- `make lint`: run ESLint and Ruff
+- `make build`: build the frontend
 
-- `make dev` / `npm run dev`: start web, api, and mcp placeholder processes
-- `make test` / `npm run test`: run test suites across services
-- `make lint` / `npm run lint`: run lint checks
-- `make format` / `npm run format`: run formatting hooks
+## Key docs
 
-## Service README Files
-
-- `apps/web/README.md`
-- `apps/api/README.md`
-- `apps/mcp-smithsonian/README.md`
-
-## Notes
-
-- `.env` stays local and untracked.
-- `.env.example` is tracked and contains variable names only.
+- `docs/project-brief.md`
+- `docs/api-contract.md`
+- `docs/frontend-contract.md`
+- `docs/deployment.md`
+- `docs/handoff.md`
+- `docs/prompt-log.md`

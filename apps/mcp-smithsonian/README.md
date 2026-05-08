@@ -1,22 +1,30 @@
 # MCP Smithsonian Service
 
-Python MCP server that wraps Smithsonian Open Access search and normalization.
+Python MCP service that wraps Smithsonian Open Access.
 
-## Purpose
+## Owns
 
-- Expose Smithsonian artifact search as MCP tools.
-- Normalize Smithsonian response fields for backend use.
-- Keep Smithsonian API key server-side only.
+- Smithsonian API requests
+- artifact normalization
+- filtering out items without usable images
 
-## Local Run
+## Tools
 
-- `python -m pip install -e .`
-- `python -m mcp_smithsonian`
+- `search_items`
+- `get_item_details`
+- `get_item_media`
 
-## Environment
+## Run
+
+- `.venv/bin/pip install -e "apps/mcp-smithsonian[dev]"`
+- `SMITHSONIAN_API_KEY=... MCP_HOST=127.0.0.1 MCP_PORT=9000 .venv/bin/python -m mcp_smithsonian.server`
+
+## Env
 
 - `SMITHSONIAN_API_KEY`
+- `MCP_HOST`, default `127.0.0.1`
+- `MCP_PORT`, default `9000`
 
 ## Test
 
-- `pytest`
+- `.venv/bin/python -m pytest apps/mcp-smithsonian`

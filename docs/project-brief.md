@@ -1,69 +1,33 @@
-# ArchiveDiver
-## Project Overview
-A simple rapid prototype that generates a digital exhibit from a user input topic using the Smithsonian Open Access API.
+# Project Brief
 
-## Core User Flow
-A user should be able to enter a historical topic/keyword, optional time period, and number of artifacts (10 max)
-
-The app will use an LLM backend using LangChain to tool call an MCP server that wraps the Smithsonian public REST API.
-
-Output should be an interactive mini-exhibit for the user
-
-## User Inputs
-- Historical topic or keyword
-- Optional time period
-- Number of artifacts, maximum 10
-
-## Expected Output
-The generated exhibit should include:
-- Exhibit title
-- Short introduction
-- Artifact cards
-- Source metadata
-- Generated captions
-- Simple timeline
-- Dev info section showing result limitations and tool-call trace
-
-## Expected Smithsonian format:
-- artifact titles
-- dates
-- creators or makers
-- descriptions
-- object types
-- museum or Smithsonian unit names
-- image or thumbnail URLs when available
-- source URLs
-- rights, license, or usage text when available
+ArchiveDiver is a prototype that turns a user topic into a small digital exhibit using Smithsonian Open Access data.
 
 ## Goal
-The goal is clean agentic architecture going from Smithsonian public REST API, to an MCP wrapper service, that gets called by a LangChain backend, and presented as a simple frontend experience
 
-## Agent Rules
-Agents working in the repo should document architecture, setup, deployment considerations, and handoff notes
-We will also be using a prompt-log.md file to log prompts
+Build a simple end-to-end demo with a clean boundary between:
 
-### Format
+- `apps/web` for UI
+- `apps/api` for exhibit generation
+- `apps/mcp-smithsonian` for Smithsonian access and normalization
 
-Time: HH:MM DD/MM/YYYY
-Tool: Cursor | Claude Code | Codex
-Task: Short summary of the requested work
+## User flow
 
-Use following for time:
-date +"%I:%M %p %d/%m/%Y"
+1. User enters a topic, optional time period, and artifact count up to 10.
+2. Backend asks the MCP service for Smithsonian artifacts.
+3. Backend returns an exhibit with a title, intro, artifact cards, timeline data, and dev details.
+4. Frontend renders the result.
 
-### API
-Keep the Smithsonian key server side; don't expose API key In the frontend or call Smithsonian API in the frontend
+## Expected output
 
-## Planned structure
-archivediver/
-    apps/
-      web/                React + Vite + TypeScript, copy.ts for UI text
-      api/                Python FastAPI + LangChain agent
-      mcp-smithsonian/    Python MCP server wrapping Smithsonian Public API
-    docs/
-      project-brief.md
-      prompt-log.md
-      etc
-    docker-compose.yml
-    README.md
-    .env.example
+- Exhibit title
+- Short intro
+- Artifact cards with image and source metadata
+- Timeline when dates are available
+- Dev panel with tool trace and result limitations
+
+## Scope rules
+
+- Keep the Smithsonian key server-side only.
+- Frontend must not call Smithsonian directly.
+- Do not put agent logic in the frontend.
+- No auth, no persistence, no payments.

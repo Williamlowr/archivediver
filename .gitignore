@@ -27,6 +27,7 @@ pnpm-debug.log*
 .parcel-cache/
 .vite/
 coverage/
+*.tsbuildinfo
 
 # OS/editor
 .DS_Store

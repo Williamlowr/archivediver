@@ -3,11 +3,13 @@ import type { ExhibitResponse } from "./types";
 export const mockExhibit: ExhibitResponse = {
   title: "Exhibit: Apollo Program",
   intro:
-    "A collection of 3 artifacts exploring apollo program from the 1900s.",
+    "Five artifacts chart how Apollo moved between engineering theater, crew procedure, and the ordinary tools of spaceflight.",
   artifacts: [
     {
       id: "edanmdm:nasm_A19940223000",
       title: "Model, Rocket, Saturn V, 1:34",
+      caption:
+        "This scale model turns the Saturn V into a study object, compressing the machine that carried Apollo crews into orbit into something legible at gallery distance.",
       date_display: "",
       date_indexed: ["1960s"],
       creator_display: "David P. Gianakos",
@@ -18,9 +20,9 @@ export const mockExhibit: ExhibitResponse = {
       unit_name: "National Air and Space Museum",
       source_url: "http://n2t.net/ark:/65665/example",
       image_url:
-        "https://ids.si.edu/ids/download?id=NASM-A19940223000-screen",
+        "https://ids.si.edu/ids/download?id=NASM-A19940223000-NASM2018-10450-000001_screen",
       thumbnail_url:
-        "https://ids.si.edu/ids/download?id=NASM-A19940223000-thumb",
+        "https://ids.si.edu/ids/download?id=NASM-A19940223000-NASM2018-10450-000001_thumb",
       image_alt: "Scale model of black and white Saturn V Rocket",
       rights: "CC0",
       subject_tags: ["Outer space", "Human spaceflight"],
@@ -29,6 +31,8 @@ export const mockExhibit: ExhibitResponse = {
     {
       id: "edanmdm:nasm_A19731231000",
       title: "Apollo Guidance Computer Component",
+      caption:
+        "A small hardware fragment stands in for Apollo's invisible infrastructure: the compact computing systems that translated mission plans into flight behavior.",
       date_display: "1968",
       date_indexed: ["1968"],
       creator_display: "MIT Instrumentation Laboratory",
@@ -37,7 +41,8 @@ export const mockExhibit: ExhibitResponse = {
       unit_code: "NASM",
       unit_name: "National Air and Space Museum",
       source_url: "http://n2t.net/ark:/65665/example-2",
-      image_url: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?auto=format&fit=crop&w=1200&q=80",
+      image_url:
+        "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?auto=format&fit=crop&w=1200&q=80",
       thumbnail_url: "",
       image_alt: "Close-up of aerospace hardware",
       rights: "CC0",
@@ -47,6 +52,8 @@ export const mockExhibit: ExhibitResponse = {
     {
       id: "edanmdm:nasm_A19710920000",
       title: "Mission Checklist Leaf",
+      caption:
+        "The checklist leaf reframes Apollo as paperwork and repetition, showing how the mission depended on procedural discipline as much as spectacle.",
       date_display: "1969",
       date_indexed: ["1969"],
       creator_display: "",
@@ -56,7 +63,8 @@ export const mockExhibit: ExhibitResponse = {
       unit_code: "NASM",
       unit_name: "National Air and Space Museum",
       source_url: "http://n2t.net/ark:/65665/example-3",
-      image_url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+      image_url:
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
       thumbnail_url: "",
       image_alt: "Document displayed in a museum-style presentation",
       rights: "",

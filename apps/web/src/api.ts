@@ -5,10 +5,13 @@ export interface ExhibitClient {
   createExhibit(request: ExhibitRequest): Promise<ExhibitResponse>;
 }
 
-const API_BASE_URL =
+const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ??
   import.meta.env.API_BASE_URL ??
-  "http://localhost:8000";
+  ""
+).replace(/\/$/, "");
+
+const EXHIBIT_ENDPOINT = API_BASE_URL ? `${API_BASE_URL}/api/exhibit` : "/api/exhibit";
 
 /** Offline / UI tests: set VITE_USE_MOCK=true */
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
@@ -28,8 +31,8 @@ export class MockExhibitClient implements ExhibitClient {
             tool: "search_artifacts",
             input: {
               query: request.topic,
-              limit: request.count,
-              period: request.period,
+              limit: request.artifactCount,
+              period: request.timePeriod,
             },
             output_count: mockExhibit.artifacts.length,
           },
@@ -41,7 +44,7 @@ export class MockExhibitClient implements ExhibitClient {
 
 export class HttpExhibitClient implements ExhibitClient {
   async createExhibit(request: ExhibitRequest): Promise<ExhibitResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/exhibit`, {
+    const response = await fetch(EXHIBIT_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +65,7 @@ export const exhibitClient: ExhibitClient = USE_MOCK
   : new HttpExhibitClient();
 
 function buildIntro(request: ExhibitRequest, artifactCount: number): string {
-  const periodClause = request.period ? ` from the ${request.period}` : "";
+  const periodClause = request.timePeriod ? ` from the ${request.timePeriod}` : "";
   const artifactWord = artifactCount === 1 ? "artifact" : "artifacts";
 
   return `A collection of ${artifactCount} ${artifactWord} exploring ${request.topic}${periodClause}.`;

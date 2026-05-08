@@ -1,12 +1,13 @@
 export type ExhibitRequest = {
   topic: string;
-  period: string | null;
-  count: number;
+  timePeriod: string | null;
+  artifactCount: number;
 };
 
 export type Artifact = {
   id: string;
   title: string;
+  caption: string;
   date_display: string;
   date_indexed: string[];
   creator_display: string;
