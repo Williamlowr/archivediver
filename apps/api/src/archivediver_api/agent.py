@@ -10,8 +10,9 @@ from archivediver_api.models import ArtifactCaption, LLMExhibitOutput
 
 _SEARCH_SYSTEM_PROMPT = """\
 You are a research assistant helping to build a Smithsonian exhibit.
-Given a topic, call the search_items tool to retrieve relevant artifacts.
-Call the tool exactly once with the provided topic and parameters.\
+Given a topic, use the available tools as many times as needed to gather relevant artifacts.
+You may call search_items with different queries or use get_item_details to enrich results.
+Stop calling tools when you have enough artifacts or no further queries would help.\
 """
 
 _EXHIBIT_SYSTEM_PROMPT = """\
@@ -71,40 +72,58 @@ async def run_agent(
         SystemMessage(content=_SEARCH_SYSTEM_PROMPT),
         HumanMessage(content=search_prompt),
     ]
-    response = await model_with_tools.ainvoke(messages)
 
     artifacts: list[dict] = []
     tool_calls: list[dict] = []
 
-    if not response.tool_calls:
+    MAX_TOOL_ROUNDS = 5
+    called_any = False
+
+    for _ in range(MAX_TOOL_ROUNDS):
+        response = await model_with_tools.ainvoke(messages)
+        messages.append(response)
+
+        if not response.tool_calls:
+            break
+
+        called_any = True
+        for tc in response.tool_calls:
+            tool_name = tc["name"]
+            tool_args = tc["args"]
+            tool_id = tc["id"]
+
+            tool_fn = next((t for t in tools if t.name == tool_name), None)
+            if tool_fn is None:
+                messages.append(ToolMessage(content="Tool not found.", tool_call_id=tool_id))
+                continue
+
+            raw_result = await tool_fn.ainvoke(tool_args)
+            messages.append(ToolMessage(content=str(raw_result), tool_call_id=tool_id))
+
+            try:
+                parsed = json.loads(raw_result)
+                if isinstance(parsed, list):
+                    artifacts.extend(parsed)
+                    tool_calls.append(
+                        {
+                            "tool": tool_name,
+                            "input": tool_args if isinstance(tool_args, dict) else {},
+                            "output_count": len(parsed),
+                        }
+                    )
+                else:
+                    tool_calls.append(
+                        {
+                            "tool": tool_name,
+                            "input": tool_args if isinstance(tool_args, dict) else {},
+                            "output_count": 1,
+                        }
+                    )
+            except (json.JSONDecodeError, TypeError):
+                tool_calls.append({"tool": tool_name, "input": {}, "output_count": 0})
+
+    if not called_any:
         return artifacts, tool_calls, _fallback_output(topic, 0, "Agent did not call search_items.")
-
-    messages.append(response)
-
-    for tc in response.tool_calls:
-        tool_name = tc["name"]
-        tool_args = tc["args"]
-        tool_id = tc["id"]
-
-        tool_fn = next((t for t in tools if t.name == tool_name), None)
-        if tool_fn is None:
-            continue
-
-        raw_result = await tool_fn.ainvoke(tool_args)
-        messages.append(ToolMessage(content=str(raw_result), tool_call_id=tool_id))
-
-        try:
-            rows = json.loads(raw_result)
-            artifacts.extend(rows)
-            tool_calls.append(
-                {
-                    "tool": tool_name,
-                    "input": tool_args if isinstance(tool_args, dict) else {},
-                    "output_count": len(rows),
-                }
-            )
-        except (json.JSONDecodeError, TypeError):
-            tool_calls.append({"tool": tool_name, "input": {}, "output_count": 0})
 
     if not artifacts:
         return artifacts, tool_calls, _fallback_output(
