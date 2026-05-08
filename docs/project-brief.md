@@ -54,18 +54,12 @@ date +"%I:%M %p %d/%m/%Y"
 ### API
 Keep the Smithsonian key server side; don't expose API key In the frontend or call Smithsonian API in the frontend
 
-## Planned structure:
+## Planned structure
 archivediver/
-    frontend/ 
-        React + Vite + TypeScript
-        Tailwind CSS
-        Copy.ts for UI text
-        Rules: no emojis, no em dashes
-    backend/
-        Python FastAPI
-        LangChain agent
-    mcp-server/
-        Python MCP server wrapping Smithsonian Public API
+    apps/
+      web/                React + Vite + TypeScript, copy.ts for UI text
+      api/                Python FastAPI + LangChain agent
+      mcp-smithsonian/    Python MCP server wrapping Smithsonian Public API
     docs/
       project-brief.md
       prompt-log.md

@@ -6,9 +6,10 @@ A minimal plan for delivering the prototype described in `project-brief.md`. Opt
 
 ```
 archivediver/
-  frontend/              React + Vite + TypeScript, Tailwind, copy.ts for UI text
-  backend/               Python FastAPI + LangChain agent
-  mcp-server/            Python MCP server wrapping the Smithsonian Open Access API
+  apps/
+    web/                 React + Vite + TypeScript, Tailwind, copy.ts for UI text
+    api/                 Python FastAPI + LangChain agent
+    mcp-smithsonian/     Python MCP server wrapping the Smithsonian Open Access API
   docs/                  project-brief.md, implementation-brief.md, prompt-log.md, etc.
   docker-compose.yml     Local orchestration of the three services
   README.md
@@ -19,11 +20,11 @@ Each subrepo owns its own dependencies, tests, and Dockerfile. No shared package
 
 ## 2. Context Map (Responsibilities and Boundaries)
 
-| Service     | Owns                                                                 | Does not own                                  | Talks to                          |
-| ----------- | -------------------------------------------------------------------- | --------------------------------------------- | --------------------------------- |
-| frontend    | UI, form state, rendering exhibit, displaying tool-call trace        | API keys, agent logic, Smithsonian calls       | backend (HTTP/JSON only)          |
-| backend     | LangChain agent loop, prompt templates, exhibit assembly, MCP client | Smithsonian HTTP details, raw API parsing      | frontend (HTTP), mcp-server (MCP) |
-| mcp-server  | Smithsonian REST calls, response normalization, MCP tool surface      | LLM logic, exhibit generation, UI concerns    | Smithsonian Open Access API       |
+| Service (Path)            | Owns                                                                 | Does not own                                  | Talks to                          |
+| ------------------------- | -------------------------------------------------------------------- | --------------------------------------------- | --------------------------------- |
+| frontend (`apps/web`)     | UI, form state, rendering exhibit, displaying tool-call trace        | API keys, agent logic, Smithsonian calls       | backend (HTTP/JSON only)          |
+| backend (`apps/api`)      | LangChain agent loop, prompt templates, exhibit assembly, MCP client | Smithsonian HTTP details, raw API parsing      | frontend (HTTP), mcp-server (MCP) |
+| mcp-server (`apps/mcp-smithsonian`) | Smithsonian REST calls, response normalization, MCP tool surface      | LLM logic, exhibit generation, UI concerns    | Smithsonian Open Access API       |
 
 Hard rules:
 - Smithsonian API key lives only in `mcp-server` env.
