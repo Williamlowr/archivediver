@@ -5,13 +5,26 @@ from pydantic import BaseModel, Field
 
 class ExhibitRequest(BaseModel):
     topic: str = Field(..., min_length=1)
-    period: str | None = None
-    count: int = Field(default=5, ge=1, le=10)
+    timePeriod: str | None = None
+    artifactCount: int = Field(default=5, ge=1, le=10)
+
+
+class ArtifactCaption(BaseModel):
+    artifact_id: str
+    caption: str
+
+
+class LLMExhibitOutput(BaseModel):
+    title: str
+    intro: str
+    captions: list[ArtifactCaption]
+    limitations: list[str]
 
 
 class ArtifactOut(BaseModel):
     id: str
     title: str
+    caption: str = ""
     date_display: str = ""
     date_indexed: list[str] = []
     creator_display: str = ""

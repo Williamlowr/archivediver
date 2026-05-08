@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from mcp_smithsonian.models import ArtifactResult
+from mcp_smithsonian.models import ArtifactResult, ItemMediaResult
 
 
 def _first_usable_media(
@@ -164,4 +164,69 @@ def normalize_row(row: dict) -> ArtifactResult | None:
         rights=rights,
         subject_tags=list(subject_tags),
         place_tags=list(place_tags),
+    )
+
+
+def extract_media(item_id: str, row: dict) -> ItemMediaResult:
+    """Extract image URLs and citation metadata from a raw Smithsonian row.
+
+    Returns ItemMediaResult with empty image fields when no usable media is found.
+    Does not filter out imageless items — the caller decides how to handle that.
+    """
+    content = row.get("content") or {}
+    dnr = content.get("descriptiveNonRepeating") or {}
+    freetext = content.get("freetext") or {}
+
+    nested_title = dnr.get("title") or {}
+    title = (
+        nested_title.get("content", "") if isinstance(nested_title, dict) else ""
+    ) or row.get("title", "")
+
+    creator_parts = [
+        n["content"]
+        for n in (freetext.get("name") or [])
+        if isinstance(n, dict) and n.get("content")
+    ]
+    creator_display = "; ".join(creator_parts)
+
+    source_url = dnr.get("record_link", "")
+    unit_code = dnr.get("unit_code") or row.get("unitCode", "")
+    unit_name = dnr.get("data_source", "")
+    if not unit_name:
+        for ds in freetext.get("dataSource") or []:
+            if isinstance(ds, dict) and ds.get("content"):
+                unit_name = ds["content"]
+                break
+
+    rights = ""
+    for r in freetext.get("objectRights") or []:
+        if isinstance(r, dict) and r.get("content"):
+            rights = r["content"]
+            break
+    if not rights:
+        rights = (dnr.get("metadata_usage") or {}).get("access", "")
+
+    online_media = dnr.get("online_media") or {}
+    media_list = online_media.get("media") or []
+    media = _first_usable_media(media_list)
+
+    if media is not None:
+        image_url, thumbnail_url, download_url, image_alt = media
+        if not image_alt:
+            image_alt = title
+    else:
+        image_url = thumbnail_url = download_url = image_alt = ""
+
+    return ItemMediaResult(
+        item_id=item_id,
+        title=title,
+        creator_display=creator_display,
+        image_url=image_url,
+        thumbnail_url=thumbnail_url,
+        image_download_url=download_url,
+        image_alt=image_alt,
+        source_url=source_url,
+        rights=rights,
+        unit_code=unit_code,
+        unit_name=unit_name,
     )

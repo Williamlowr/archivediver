@@ -22,3 +22,17 @@ class ArtifactResult(BaseModel):
     rights: str = ""
     subject_tags: list[str] = []
     place_tags: list[str] = []
+
+
+class ItemMediaResult(BaseModel):
+    item_id: str
+    title: str = ""
+    creator_display: str = ""
+    image_url: str = ""
+    thumbnail_url: str = ""
+    image_download_url: str = ""
+    image_alt: str = ""
+    source_url: str = ""
+    rights: str = ""
+    unit_code: str = ""
+    unit_name: str = ""

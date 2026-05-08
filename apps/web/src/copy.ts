@@ -8,7 +8,7 @@ export const copy = {
   topicPlaceholder: "Apollo program, civil rights movement, gilded age...",
   periodLabel: "Timeline",
   countLabel: "Artifact Count",
-  buildLabel: "Build Exhibit",
+  buildLabel: "Dive for Artifacts",
   loadingLabel: "Diving…",
   exhibitLabel: "Curated Exhibit",
   artifactsLabel: "Artifacts",

@@ -3,47 +3,81 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
+
+from archivediver_api.models import ArtifactCaption, LLMExhibitOutput
+
+_SEARCH_SYSTEM_PROMPT = """\
+You are a research assistant helping to build a Smithsonian exhibit.
+Given a topic, call the search_items tool to retrieve relevant artifacts.
+Call the tool exactly once with the provided topic and parameters.\
+"""
+
+_EXHIBIT_SYSTEM_PROMPT = """\
+You are a museum curator writing content for a Smithsonian digital exhibit.
+
+Rules:
+- Base the title and intro only on what the artifacts actually show.
+- Write one caption per artifact (1-2 sentences). Use only fields present in the artifact data.
+- If creator, date, or description is missing or empty, write "unknown" in the caption rather than guessing.
+- Limitations must note concrete gaps: sparse results, missing dates, empty descriptions, few artifacts found.
+- Be concise. No em dashes. No emojis.\
+"""
+
+
+def _fallback_output(topic: str, artifact_count: int, reason: str) -> LLMExhibitOutput:
+    period_str = ""
+    return LLMExhibitOutput(
+        title=f"Exhibit: {topic.title()}",
+        intro=f"A collection of {artifact_count} artifact{'s' if artifact_count != 1 else ''} exploring {topic}{period_str}.",
+        captions=[],
+        limitations=[reason],
+    )
 
 
 async def run_agent(
     topic: str,
-    period: str | None,
-    count: int,
+    time_period: str | None,
+    artifact_count: int,
     chat_model: Any = None,
     mcp_url: str = "http://localhost:9000/sse",
-) -> tuple[list[dict], list[dict]]:
-    """Run one tool-use round against the MCP server.
+) -> tuple[list[dict], list[dict], LLMExhibitOutput]:
+    """Run two-phase agent against the MCP server.
 
-    Returns (artifacts, tool_calls) where artifacts is a list of raw dicts
-    from the search_artifacts tool output and tool_calls is a list of
-    ToolCallRecord-compatible dicts for the dev trace.
+    Phase 1: tool call to search_items via MCP.
+    Phase 2: structured output generation (title, intro, captions, limitations).
+
+    Returns (artifacts, tool_calls, llm_output).
     """
     if chat_model is None:
         from langchain_anthropic import ChatAnthropic
 
         chat_model = ChatAnthropic(model="claude-haiku-4-5-20251001")
 
+    # Phase 1: tool call
     mcp_client = MultiServerMCPClient(
         {"smithsonian": {"url": mcp_url, "transport": "sse"}}
     )
     tools = await mcp_client.get_tools()
     model_with_tools = chat_model.bind_tools(tools)
 
-    period_clause = f" from the {period}" if period else ""
-    prompt = (
-        f"Search for {count} artifacts about {topic}{period_clause} "
-        f"and return them using the search_artifacts tool."
+    period_clause = f" from the {time_period}" if time_period else ""
+    search_prompt = (
+        f"Search for {artifact_count} artifacts about {topic}{period_clause} "
+        f"using the search_items tool."
     )
-    messages = [HumanMessage(content=prompt)]
+    messages = [
+        SystemMessage(content=_SEARCH_SYSTEM_PROMPT),
+        HumanMessage(content=search_prompt),
+    ]
     response = await model_with_tools.ainvoke(messages)
 
     artifacts: list[dict] = []
     tool_calls: list[dict] = []
 
     if not response.tool_calls:
-        return artifacts, tool_calls
+        return artifacts, tool_calls, _fallback_output(topic, 0, "Agent did not call search_items.")
 
     messages.append(response)
 
@@ -57,9 +91,7 @@ async def run_agent(
             continue
 
         raw_result = await tool_fn.ainvoke(tool_args)
-        messages.append(
-            ToolMessage(content=str(raw_result), tool_call_id=tool_id)
-        )
+        messages.append(ToolMessage(content=str(raw_result), tool_call_id=tool_id))
 
         try:
             rows = json.loads(raw_result)
@@ -72,8 +104,52 @@ async def run_agent(
                 }
             )
         except (json.JSONDecodeError, TypeError):
-            tool_calls.append(
-                {"tool": tool_name, "input": {}, "output_count": 0}
-            )
+            tool_calls.append({"tool": tool_name, "input": {}, "output_count": 0})
 
-    return artifacts, tool_calls
+    if not artifacts:
+        return artifacts, tool_calls, _fallback_output(
+            topic, 0, "No image-bearing artifacts found for this topic."
+        )
+
+    # Phase 2: structured exhibit generation
+    artifact_summary = json.dumps(
+        [
+            {
+                "id": a.get("id", ""),
+                "title": a.get("title", ""),
+                "date_display": a.get("date_display", ""),
+                "creator_display": a.get("creator_display", ""),
+                "description": a.get("description", ""),
+                "object_type": a.get("object_type", ""),
+                "unit_name": a.get("unit_name", ""),
+            }
+            for a in artifacts
+        ],
+        indent=2,
+    )
+
+    exhibit_prompt = (
+        f"Topic: {topic}\n"
+        f"Period filter: {time_period or 'none'}\n"
+        f"Artifact count returned: {len(artifacts)}\n\n"
+        f"Artifacts:\n{artifact_summary}\n\n"
+        "Generate the exhibit title, intro, one caption per artifact (keyed by artifact id), "
+        "and a list of limitations."
+    )
+
+    structured_model = chat_model.with_structured_output(LLMExhibitOutput)
+    try:
+        llm_output: LLMExhibitOutput = await structured_model.ainvoke(
+            [
+                SystemMessage(content=_EXHIBIT_SYSTEM_PROMPT),
+                HumanMessage(content=exhibit_prompt),
+            ]
+        )
+    except Exception:
+        llm_output = _fallback_output(
+            topic,
+            len(artifacts),
+            "Exhibit content generation failed; using fallback template.",
+        )
+
+    return artifacts, tool_calls, llm_output

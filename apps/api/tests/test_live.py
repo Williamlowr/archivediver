@@ -24,7 +24,7 @@ async def test_live_post_exhibit():
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
             f"{API_URL}/api/exhibit",
-            json={"topic": "apollo program", "count": 3},
+            json={"topic": "apollo program", "artifactCount": 3},
         )
 
     assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text}"
@@ -40,7 +40,11 @@ async def test_live_post_exhibit():
     assert artifact["title"], "artifact.title must be non-empty"
     assert artifact["source_url"], "artifact.source_url must be non-empty"
     assert artifact["image_url"], "artifact.image_url must be non-empty"
+    assert "caption" in artifact, "artifact must have a caption field"
+    assert "image_download_url" not in artifact, "image_download_url must not leak to frontend"
 
     tc = data["dev"]["tool_calls"][0]
-    assert tc["tool"] == "search_artifacts"
+    assert tc["tool"] == "search_items"
     assert tc["output_count"] > 0
+
+    assert "limitations" in data["dev"], "dev must have a limitations field"

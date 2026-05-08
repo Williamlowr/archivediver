@@ -1,6 +1,6 @@
 import pytest
 from tests.fixtures import APOLLO_ROW_WITH_IMAGE, ROW_NO_IMAGE
-from mcp_smithsonian.normalizer import normalize_row, _first_usable_media
+from mcp_smithsonian.normalizer import extract_media, normalize_row, _first_usable_media
 
 
 def test_normalize_full_row():
@@ -86,3 +86,37 @@ def test_first_usable_media_skips_empty_entries():
     result = _first_usable_media(media_list)
     assert result is not None
     assert result[0] == "https://example.com/second.jpg"
+
+
+# extract_media
+
+def test_extract_media_with_image():
+    media = extract_media("edanmdm:chndm_1901-39-3309", APOLLO_ROW_WITH_IMAGE)
+    assert media.item_id == "edanmdm:chndm_1901-39-3309"
+    assert media.title == "Thirteen Apollo Subjects for Ceiling"
+    assert media.creator_display == "Felice Giani, Italian, 1758-1823"
+    assert media.image_url == "https://ids.si.edu/ids/download?id=CHSDM-3D4BA7C1D0CE2-000001_screen"
+    assert media.thumbnail_url == "https://ids.si.edu/ids/download?id=CHSDM-3D4BA7C1D0CE2-000001_thumb"
+    assert media.image_download_url == "https://ids.si.edu/ids/download?id=CHSDM-3D4BA7C1D0CE2-000001.jpg"
+    assert media.image_alt == "THIRTEEN APOLLO SUBJECTS FOR CEILING"
+    assert media.source_url == "https://collection.cooperhewitt.org/view/objects/asitem/id/10032"
+    assert media.rights == "CC0"
+    assert media.unit_code == "CHNDM"
+    assert media.unit_name == "Cooper Hewitt, Smithsonian Design Museum"
+
+
+def test_extract_media_no_image_returns_empty_fields():
+    media = extract_media("edanmdm:sil_123", ROW_NO_IMAGE)
+    assert media.item_id == "edanmdm:sil_123"
+    assert media.image_url == ""
+    assert media.thumbnail_url == ""
+    assert media.image_download_url == ""
+    assert media.image_alt == ""
+
+
+def test_extract_media_empty_row_returns_empty_fields():
+    media = extract_media("edanmdm:test_empty", {})
+    assert media.item_id == "edanmdm:test_empty"
+    assert media.image_url == ""
+    assert media.source_url == ""
+    assert media.title == ""

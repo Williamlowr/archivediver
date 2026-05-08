@@ -1,4 +1,8 @@
 """Shared test fixtures for mcp-smithsonian tests."""
+# ITEM_DETAIL_RESPONSE mirrors the shape returned by content/{id}.
+# The Smithsonian API wraps the row inside {"response": {...}}, which
+# get_item_raw unwraps before returning. So this dict is the unwrapped row —
+# same structure as a search row — used to mock get_item_raw directly.
 
 APOLLO_ROW_WITH_IMAGE: dict = {
     "id": "chndm_1901-39-3309",
@@ -60,6 +64,8 @@ APOLLO_ROW_WITH_IMAGE: dict = {
         },
     },
 }
+
+ITEM_DETAIL_ROW: dict = APOLLO_ROW_WITH_IMAGE
 
 ROW_NO_IMAGE: dict = {
     "id": "sil_123",

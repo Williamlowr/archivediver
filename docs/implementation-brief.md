@@ -67,14 +67,24 @@ Goal: prove the backend-to-MCP-to-Smithsonian path end-to-end.
 - Contract test: `curl -X POST /api/exhibit -d '{"topic":"apollo program","count":3}'` returns valid exhibit JSON with at least one artifact and a tool-call trace.
 - Done when: backend test hits a real (or recorded) Smithsonian response via the MCP tool and produces the documented JSON shape.
 
-### Stage 2: minimal frontend wiring
+### Stage 2: LLM backend finalization + frontend wiring
 
-Goal: render the Stage 1 response in the browser.
+Goal: LLM generates exhibit content; frontend renders a live exhibit.
 
-- Frontend form: topic input, optional period, count selector (1 to 10).
-- POST to backend, render: header, artifact cards (image, title, date, source link), simple timeline (sorted by date), DevDetails panel showing tool-call trace and limitations.
+Backend (complete):
+- Request fields renamed: `count` -> `artifactCount`, `period` -> `timePeriod`.
+- Two-phase agent: Phase 1 calls `search_artifacts` via MCP. Phase 2 uses `with_structured_output(LLMExhibitOutput)` to generate title, intro, per-artifact captions, and limitations.
+- `ArtifactOut` gains a `caption` field (LLM-generated). All other artifact fields are unchanged Smithsonian source data.
+- `dev.limitations` now populated by the LLM with observed result gaps.
+- Schema enforced in code via Pydantic `LLMExhibitOutput`, not only in the prompt.
+- 503 errors returned on MCP or LLM failure.
+- See `docs/frontend-contract.md` for the full response schema and frontend display requirements.
+
+Frontend (pending):
+- Form: topic input, optional `timePeriod` chips, `artifactCount` selector (1 to 10).
+- POST to backend, render: header (title, intro), artifact cards (image, title, caption, date, creator, source link), simple timeline, DevDetails panel (tool-call trace, limitations).
 - copy.ts for all UI strings.
-- Done when: a user can type a topic, submit, and see a rendered exhibit using live backend data, with the dev panel showing the tool call.
+- Done when: a user can type a topic, submit, and see a rendered exhibit using live backend data, with the dev panel showing tool calls and LLM-observed limitations.
 
 ## 5. Risks and Mitigations
 

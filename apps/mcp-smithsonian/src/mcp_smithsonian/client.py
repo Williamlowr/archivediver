@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import urllib.parse
 
 import httpx
 
@@ -39,8 +40,36 @@ async def search_artifacts_raw(
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(f"{SMITHSONIAN_BASE}/search", params=params)
-        response.raise_for_status()
+        try:
+            response = await client.get(f"{SMITHSONIAN_BASE}/search", params=params)
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"Smithsonian search error {exc.response.status_code} for query {query!r}"
+            ) from exc
+        except httpx.RequestError as exc:
+            raise RuntimeError(f"Network error during Smithsonian search: {exc}") from exc
         data = response.json()
 
     return data.get("response", {}).get("rows") or []
+
+
+async def get_item_raw(item_id: str) -> dict:
+    """Fetch one item from content/{id}. Raises RuntimeError on HTTP errors."""
+    encoded = urllib.parse.quote(item_id, safe="")
+    params = {"api_key": _api_key()}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.get(
+                f"{SMITHSONIAN_BASE}/content/{encoded}", params=params
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"Smithsonian API error {exc.response.status_code} for item {item_id!r}"
+            ) from exc
+        except httpx.RequestError as exc:
+            raise RuntimeError(f"Network error fetching item {item_id!r}: {exc}") from exc
+
+    return response.json().get("response", {})

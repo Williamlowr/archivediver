@@ -34,4 +34,11 @@ Time: 12:10 PM 08/05/2026
 Tool: Cursor
 Task: Default web app to live HTTP exhibit API
 
+Time: 12:16 PM 08/05/2026
+Tool: Claude Code
+Task: Finalized MCP server tools: renamed search_artifacts to search_items, added get_item_details and get_item_media, input validation, error handling, new tests, updated api-contract.md and agent.py
+
+Time: 12:21 PM 08/05/2026
+Tool: Claude Code
+Task: Stage 2 LLM backend finalization: two-phase agent with structured output, renamed request fields to artifactCount/timePeriod, added LLMExhibitOutput schema enforcement, per-artifact captions, populated dev.limitations, 503 error handling, created frontend-contract.md, updated api-contract.md and implementation-brief.md, 15 API tests green
 
