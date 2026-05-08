@@ -1,0 +1,35 @@
+export const copy = {
+  brand: "ArchiveDiver",
+  eyebrow: "Smithsonian Exhibit Builder",
+  heroTitle: "Build a small digital exhibit from a historical thread.",
+  heroBody:
+    "Start with a topic, narrow the century, and pull a tight set of artifacts into a readable exhibit.",
+  topicLabel: "Topic",
+  topicPlaceholder: "Apollo program, civil rights movement, gilded age...",
+  periodLabel: "Timeline",
+  countLabel: "Artifact Count",
+  buildLabel: "Build Exhibit",
+  loadingLabel: "Diving…",
+  exhibitLabel: "Curated Exhibit",
+  artifactsLabel: "Artifacts",
+  timelineLabel: "Timeline",
+  noTimeline: "No structured dates were available for this result set.",
+  emptyArtifacts: "No image-bearing artifacts were returned for this search.",
+  devLabel: "Dev Details",
+  devHint: "Tool trace and result limitations",
+  noLimitations: "No limitations reported.",
+  sourceLabel: "Source",
+  rightsLabel: "Rights",
+  objectTypeLabel: "Object type",
+  noResultsYet: "Build an exhibit to see a first vertical slice render here.",
+  errorPrefix: "Unable to build exhibit:",
+} as const;
+
+export const periodOptions = [
+  { label: "Any", value: null },
+  { label: "1600s", value: "1600s" },
+  { label: "1700s", value: "1700s" },
+  { label: "1800s", value: "1800s" },
+  { label: "1900s", value: "1900s" },
+  { label: "2000s", value: "2000s" },
+] as const;

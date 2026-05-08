@@ -18,15 +18,20 @@ Time: 10:55 AM 08/05/2026
 Tool: Cursor (Codex)
 Task: Added root gitignore for env, Python, Node, and local tooling artifacts
 
-Time: 10:57 AM 08/05/2026
+Time: 11:19 AM 08/05/2026
 Tool: Codex
 Task: Investigated API provider-key fallback change request and validated current workspace contents
-
-Time: 11:21 AM 08/05/2026
-Tool: Cursor
-Task: Reviewed Smithsonian data notes and re-tested live-key assumptions
 
 Time: 11:41 AM 08/05/2026
 Tool: Claude Code
 Task: Implemented Stage 1 vertical slice: mcp-smithsonian server with search_artifacts tool, FastAPI backend with POST /api/exhibit, all four verification steps green, wrote docs/api-contract.md for Stage 2 handoff
+
+Time: 12:03 PM 08/05/2026
+Tool: Codex
+Task: Implemented Stage 2 frontend vertical slice MVP with mock-first UI, frontend contract, tests, and one live backend verification
+
+Time: 12:10 PM 08/05/2026
+Tool: Cursor
+Task: Default web app to live HTTP exhibit API
+
 
