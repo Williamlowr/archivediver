@@ -144,6 +144,18 @@ Do not trust `indexedStructured.online_media_type` alone. Live checks confirmed 
 - `SIL` false-positive image behavior is not unique among archive and library units
 - `subject_tags` can stay limited to `indexedStructured.topic` in v1 without losing too much useful metadata
 
+### Live-key results (2026-05-08)
+- Search rows included nested `content` (sample: `apollo`, `rows=2`), including `descriptiveNonRepeating`, `indexedStructured`, and `freetext`.
+- `content/{id}` lookup behavior:
+  - `row.url`: worked (HTTP 200) in sampled object and across multiple unit spot checks.
+  - top-level `row.id`: also worked (HTTP 200) in sampled object and across multiple unit spot checks.
+  - `content.descriptiveNonRepeating.record_ID`: failed as a standalone lookup id (HTTP error).
+- SIL image false positives:
+  - Query `unit_code:SIL AND online_media_type:Images` returned rows with **no** `descriptiveNonRepeating.online_media.media` (25/25 in a quick probe).
+  - Confirms we must validate real media via `descriptiveNonRepeating.online_media.media` (not `indexedStructured.online_media_type`).
+- `subject_tags` from `indexedStructured.topic`:
+  - Present in some rows, but not guaranteed (1/2 rows in the `apollo` sample had non-empty `topic`).
+
 ## Sources
 - Official API client and operation list:
   - [Smithsonian/smithsonian-openaccess](https://github.com/Smithsonian/smithsonian-openaccess)
