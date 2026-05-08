@@ -17,3 +17,7 @@ Task: Implemented repo scaffolding for docs, env template, dependencies, and roo
 Time: 10:55 AM 08/05/2026
 Tool: Codex
 Task: Added root gitignore for env, Python, Node, and local tooling artifacts
+
+Time: 11:12 AM 08/05/2026
+Tool: Codex
+Task: Documented Smithsonian API data shape, media rules, and known limitations
