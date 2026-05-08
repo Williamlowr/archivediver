@@ -33,6 +33,10 @@ coverage/
 .idea/
 .vscode/
 
-# Tooling artifacts
+# Playwright (test runner outputs, MCP/CLI snapshots and logs)
 .playwright-mcp/
 .playwright-cli/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

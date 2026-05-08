@@ -30,7 +30,7 @@ help:
 	@echo "  lint            Run all linters"
 	@echo "  format          Format web (Prettier) and Python (Ruff)"
 	@echo "  build           Build the web app"
-	@echo "  clean           Remove build and cache artifacts"
+	@echo "  clean           Remove build, cache, and local Playwright artifacts"
 
 install: install-web install-api install-mcp
 
@@ -96,6 +96,7 @@ build:
 
 clean:
 	rm -rf apps/web/dist apps/web/node_modules/.vite
+	rm -rf test-results playwright-report blob-report .playwright-mcp .playwright-cli playwright/.cache
 	find apps -type d -name __pycache__ -prune -exec rm -rf {} +
 	find apps -type d -name .pytest_cache -prune -exec rm -rf {} +
 	find apps -type d -name .ruff_cache -prune -exec rm -rf {} +
