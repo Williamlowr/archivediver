@@ -56,4 +56,10 @@ Task: Designed live-plus-demo Docker startup with a visible runtime status flag
 
 Time: 1:05 PM 05/08/2026
 Tool: Claude Code
-Task: Fixed 8 frontend UI layout bugs: h1 max-width causing 10-line wrap, Time Period label wrapping, site header logo/title too small, site summary orphaned right-side, exhibit title 4-line wrap (max-width: 14ch removed), Artifacts label lacking visual separation from featured card, standard artifact cards using broken side-by-side layout (switched to vertical stack with fixed image height), metadata source grid unstyled (added background, padding, bolder labels)
+Task: Fixed 8 frontend UI layout bugs
+
+Time: 1:15 PM 05/08/2026
+Tool: Claude Code
+Task: Fixed agent tool call tracing
+
+
