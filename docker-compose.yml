@@ -1,0 +1,26 @@
+services:
+  mcp:
+    build:
+      context: apps/mcp-smithsonian
+    environment:
+      SMITHSONIAN_API_KEY: ${SMITHSONIAN_API_KEY}
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "9000"
+
+  api:
+    build:
+      context: apps/api
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      MCP_URL: http://mcp:9000/sse
+    depends_on:
+      - mcp
+
+  web:
+    build:
+      context: apps/web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api

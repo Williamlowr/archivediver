@@ -4,7 +4,7 @@
         test test-web test-api test-mcp \
         lint lint-web lint-api lint-mcp \
         format format-web format-py \
-        build clean
+        build docker clean
 
 ifneq (,$(wildcard .env))
 include .env
@@ -30,6 +30,7 @@ help:
 	@echo "  lint            Run all linters"
 	@echo "  format          Format web (Prettier) and Python (Ruff)"
 	@echo "  build           Build the web app"
+	@echo "  docker          Build and run the full stack with Docker Compose"
 	@echo "  clean           Remove build, cache, and local Playwright artifacts"
 
 install: install-web install-api install-mcp
@@ -93,6 +94,9 @@ format-py:
 
 build:
 	npm run build --prefix apps/web
+
+docker:
+	docker compose up --build
 
 clean:
 	rm -rf apps/web/dist apps/web/node_modules/.vite
