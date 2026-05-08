@@ -38,6 +38,7 @@ export type ToolCallRecord = {
 export type DevInfo = {
   tool_calls: ToolCallRecord[];
   limitations: string[];
+  notices: string[];
 };
 
 export type ExhibitResponse = {

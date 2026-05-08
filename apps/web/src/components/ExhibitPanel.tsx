@@ -52,6 +52,10 @@ export function ExhibitPanel({
         <TimelinePanel timeline={exhibit.timeline} />
       </div>
 
+      {exhibit.dev.notices.length > 0 ? (
+        <ResultNotice tone="muted" title="Search notice" items={exhibit.dev.notices} />
+      ) : null}
+
       {weakResultNotes.length > 0 ? (
         <ResultNotice tone="muted" title={copy.resultNotesLabel} items={weakResultNotes} />
       ) : null}

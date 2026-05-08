@@ -50,6 +50,7 @@ class ToolCallRecord(BaseModel):
 class DevInfo(BaseModel):
     tool_calls: list[ToolCallRecord] = []
     limitations: list[str] = []
+    notices: list[str] = []
 
 
 class TimelineEntry(BaseModel):

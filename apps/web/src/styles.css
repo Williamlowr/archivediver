@@ -640,11 +640,8 @@ select {
 }
 
 .dev-tool-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .dev-tool-item {
@@ -659,6 +656,20 @@ select {
   gap: 10px;
   align-items: baseline;
   color: var(--ink);
+}
+
+.dev-tool-section {
+  display: grid;
+  gap: 8px;
+}
+
+.dev-tool-section-label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
 }
 
 .quiet-note {

@@ -35,6 +35,7 @@ FAKE_TOOL_CALLS = [
         "output_count": 1,
     }
 ]
+FAKE_NOTICES: list[str] = []
 
 FAKE_LLM_OUTPUT = LLMExhibitOutput(
     title="Apollo: Engineering a Moon Landing",
@@ -58,7 +59,7 @@ def client():
 def mock_run_agent():
     with patch(
         "archivediver_api.main.run_agent",
-        new=AsyncMock(return_value=([FAKE_ARTIFACT], FAKE_TOOL_CALLS, FAKE_LLM_OUTPUT)),
+        new=AsyncMock(return_value=([FAKE_ARTIFACT], FAKE_TOOL_CALLS, FAKE_LLM_OUTPUT, FAKE_NOTICES)),
     ) as m:
         yield m
 
@@ -163,7 +164,7 @@ def test_post_exhibit_no_artifacts(client):
     )
     with patch(
         "archivediver_api.main.run_agent",
-        new=AsyncMock(return_value=([], [], empty_llm)),
+        new=AsyncMock(return_value=([], [], empty_llm, [])),
     ):
         resp = client.post("/api/exhibit", json={"topic": "obscure topic"})
         assert resp.status_code == 200

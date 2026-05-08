@@ -40,7 +40,7 @@ def _build_timeline(artifacts: list[ArtifactOut]) -> list[TimelineEntry]:
 @app.post("/api/exhibit", response_model=ExhibitResponse)
 async def create_exhibit(req: ExhibitRequest) -> ExhibitResponse:
     try:
-        raw_artifacts, raw_tool_calls, llm_output = await run_agent(
+        raw_artifacts, raw_tool_calls, llm_output, notices = await run_agent(
             topic=req.topic,
             time_period=req.timePeriod,
             artifact_count=req.artifactCount,
@@ -64,7 +64,7 @@ async def create_exhibit(req: ExhibitRequest) -> ExhibitResponse:
 
     timeline = _build_timeline(artifacts)
     tool_call_records = [ToolCallRecord(**tc) for tc in raw_tool_calls]
-    dev = DevInfo(tool_calls=tool_call_records, limitations=llm_output.limitations)
+    dev = DevInfo(tool_calls=tool_call_records, limitations=llm_output.limitations, notices=notices)
 
     return ExhibitResponse(
         title=llm_output.title,

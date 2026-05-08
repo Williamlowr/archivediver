@@ -88,5 +88,6 @@ export const mockExhibit: ExhibitResponse = {
     limitations: [
       "Descriptions and structured dates can be sparse across Smithsonian units.",
     ],
+    notices: [],
   },
 };

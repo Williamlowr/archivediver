@@ -62,4 +62,15 @@ Time: 1:15 PM 05/08/2026
 Tool: Claude Code
 Task: Fixed agent tool call tracing
 
+Time: 1:16 PM 05/08/2026
+Tool: Claude Code
+Task: Fixed image sizing bug
+
+Time: 01:21 PM 08/05/2026
+Tool: Codex
+Task: Presented Docker runtime design for container networking and demo fallback behavior
+
+Time: 01:32 PM 08/05/2026
+Tool: Codex
+Task: Reviewed QA findings, skipped outdated gaps, and fixed broken mocked API tests
 
